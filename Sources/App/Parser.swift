@@ -54,14 +54,14 @@ final class Parser {
             return worker.future([])
         }
         
-        return client.get(url).flatMap { response -> Future<[Job]> in
+        return client.get(url).flatMap { response in
             guard let data = response.http.body.data else {
                 return worker.future([])
             }
             
             var jobs = [Future<[Job]>]()
             let landingJobsData = try JSONDecoder().decode(LandingJobsData.self, from: data)
-            let firstPageJobs = landingJobsData.offers.map { Job(landingJob: $0) }
+            let firstPageJobs = landingJobsData.offers.map { Job($0) }
             jobs.append(worker.future(firstPageJobs))
             
             for page in (2...landingJobsData.numberOfPages) {
@@ -75,7 +75,7 @@ final class Parser {
                     }
                     
                     let landingJobsData = try JSONDecoder().decode(LandingJobsData.self, from: data)
-                    let jobs = landingJobsData.offers.map { Job(landingJob: $0) }
+                    let jobs = landingJobsData.offers.map { Job($0) }
                     return jobs
                 })
             }
@@ -88,7 +88,7 @@ final class Parser {
     
     private func getJobsFromCryptoJobs(on worker: Worker) throws -> Future<[Job]> {
         guard let url = URL(string: "https://cryptojobslist.com/job/filter?remote=true") else {
-            throw Abort(.internalServerError)
+            return worker.future([])
         }
         
         var jobs = [Job]()
@@ -98,12 +98,7 @@ final class Parser {
             }
             let cryptoJobs = try JSONDecoder().decode([CryptoJob].self, from: data)
             for cryptoJob in cryptoJobs {
-                var tags = [String]()
-                if let category = cryptoJob.category {
-                    tags.append(category)
-                }
-                let job = Job(cryptoJob: cryptoJob)
-                jobs.append(job)
+                jobs.append(Job(cryptoJob))
             }
             return jobs
         }

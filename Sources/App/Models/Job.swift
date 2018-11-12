@@ -19,7 +19,7 @@ struct Job: Content {
         self.source = source
     }
     
-    init(landingJob: LandingJob) {
+    init(_ landingJob: LandingJob) {
         self.jobTitle = landingJob.jobTitle
         self.companyLogoURL = landingJob.companyLogoURL
         self.companyName = landingJob.companyName
@@ -29,9 +29,9 @@ struct Job: Content {
         self.source = "landing-jobs"
     }
     
-    init(cryptoJob: CryptoJob) {
+    init(_ cryptoJob: CryptoJob) {
         self.jobTitle = cryptoJob.jobTitle
-        self.companyLogoURL = cryptoJob.companyLogoURL
+        self.companyLogoURL = cryptoJob.companyLogoURL ?? "NA"
         self.companyName = cryptoJob.companyName
         self.jobDescription = cryptoJob.jobDescription
         self.applyURL = cryptoJob.applyURL
@@ -89,7 +89,7 @@ struct CryptoJob: Decodable {
         case category
     }
     let jobTitle: String
-    let companyLogoURL: String
+    let companyLogoURL: String?
     let companyName: String
     let jobDescription: String
     let applyURL: String
