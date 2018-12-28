@@ -40,7 +40,8 @@ final class Parser {
                 let companyName = try arrayData[1].select("a h3").text()
                 let applyURL = try "https://remoteok.io" + arrayData[1].select("a").attr("href")
                 let tags = try arrayData[3].select("h3").array().map { try $0.text() }
-                let jobDescription = try trDescription?.text().components(separatedBy: " See more jobs at").first ?? ""
+                var jobDescription = try trDescription?.text().components(separatedBy: " See more jobs at").first ?? ""
+                jobDescription = jobDescription.replacingOccurrences(of: "{linebreak}", with: "\n")
                 
                 let job = Job(jobTitle: jobTitle, companyLogoURL: companyLogoURL, companyName: companyName, jobDescription: jobDescription, applyURL: applyURL, tags: tags, source: "remote-ok")
                 jobs.append(job)
