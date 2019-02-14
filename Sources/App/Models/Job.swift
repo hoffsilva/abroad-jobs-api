@@ -8,17 +8,9 @@ struct Job: Content {
     let applyURL: String
     let tags: [String]
     let source: String
-    
-    init(jobTitle: String, companyLogoURL: String, companyName: String, jobDescription: String, applyURL: String, tags: [String], source: String) {
-        self.jobTitle = jobTitle
-        self.companyLogoURL = companyLogoURL
-        self.companyName = companyName
-        self.jobDescription = jobDescription
-        self.applyURL = applyURL
-        self.tags = tags
-        self.source = source
-    }
-    
+}
+
+extension Job {
     init(_ landingJob: LandingJob) {
         self.jobTitle = landingJob.jobTitle
         self.companyLogoURL = landingJob.companyLogoURL
@@ -37,6 +29,16 @@ struct Job: Content {
         self.applyURL = cryptoJob.applyURL
         self.tags = [cryptoJob.category ?? ""].filter { $0 != "" }
         self.source = "cryptojobslist"
+    }
+    
+    init(_ vanhackJob: VanhackJob) {
+        self.jobTitle = vanhackJob.positionName
+        self.companyLogoURL = vanhackJob.company ?? "NA"
+        self.companyName = vanhackJob.company ?? "NA"
+        self.jobDescription = vanhackJob.description
+        self.applyURL = "https://app.vanhack.com/JobBoard/JobDetails?idJob=" + String(vanhackJob.id)
+        self.tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
+        self.source = "vanhackjobs"
     }
 }
 
@@ -94,4 +96,54 @@ struct CryptoJob: Decodable {
     let jobDescription: String
     let applyURL: String
     let category: String?
+}
+
+//Vanhack Jobs
+
+struct VanhackResult: Decodable {
+    let totalQuery: Int
+    let totalCount: Int
+    let items: [VanhackJob]
+}
+
+struct VanhackJob: Decodable {
+    let positionName: String
+    let description: String
+    let company: String?
+    let city: String
+    let country: String
+    let postDate: String
+    let mustHaveSkills: [Skill]
+    let jobType: String
+    let salaryRangeStart: String?
+    let salaryRangeEnd: String?
+    let applied: Bool
+    let favorited: Bool
+    let newJob: Bool
+    let matchPorcentage: Int
+    let id: Int
+}
+
+struct Skill: Decodable {
+    let id: Int
+    let name: String
+    let match: Bool
+}
+
+struct ResultOfVanhack: Decodable {
+    let result: VanhackResult
+    let targetUrl: String?
+    let success: Bool
+    let error: String?
+    let unAuthorizedRequest: Bool
+    let abp: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case abp = "__abp"
+        case result
+        case targetUrl
+        case success
+        case error
+        case unAuthorizedRequest
+    }
 }
