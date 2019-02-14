@@ -8,16 +8,6 @@ struct Job: Content {
     let applyURL: String
     let tags: [String]
     let source: String
-    
-    init(jobTitle: String, companyLogoURL: String, companyName: String, jobDescription: String, applyURL: String, tags: [String], source: String) {
-        self.jobTitle = jobTitle
-        self.companyLogoURL = companyLogoURL
-        self.companyName = companyName
-        self.jobDescription = jobDescription
-        self.applyURL = applyURL
-        self.tags = tags
-        self.source = source
-    }
 }
 
 extension Job {
@@ -147,7 +137,16 @@ struct ResultOfVanhack: Decodable {
     let success: Bool
     let error: String?
     let unAuthorizedRequest: Bool
-    let __abp: Bool
+    let abp: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case abp = "__abp"
+        case result
+        case targetUrl
+        case success
+        case error
+        case unAuthorizedRequest
+    }
 }
 
 
