@@ -38,6 +38,16 @@ struct Job: Content {
         self.tags = [cryptoJob.category ?? ""].filter { $0 != "" }
         self.source = "cryptojobslist"
     }
+    
+    init(_ vanhackJob: VanhackJob) {
+        self.jobTitle = vanhackJob.positionName
+        self.companyLogoURL = vanhackJob.company ?? "NA"
+        self.companyName = vanhackJob.company ?? "NA"
+        self.jobDescription = vanhackJob.description
+        self.applyURL = "https://app.vanhack.com/JobBoard/JobDetails?idJob=" + String(vanhackJob.id)
+        self.tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
+        self.source = "vanhackjobs"
+    }
 }
 
 struct LandingJob: Decodable {
@@ -95,3 +105,93 @@ struct CryptoJob: Decodable {
     let applyURL: String
     let category: String?
 }
+
+
+//Vanhack Jobs
+
+struct VanhackResult: Decodable {
+    
+    let totalQuery: Int
+    let totalCount: Int
+    let items: [VanhackJob]
+    
+    enum CodingKeys: String, CodingKey {
+        case totalQuery
+        case totalCount
+        case items
+    }
+}
+
+
+struct VanhackJob: Decodable {
+    let positionName: String
+    let description: String
+    let company: String?
+    let city: String
+    let country: String
+    let postDate: String
+    let mustHaveSkills: [Skill]
+    //let niceToHaveSkills: [Skill]
+    let jobType: String
+    let salaryRangeStart: String?
+    let salaryRangeEnd: String?
+    let applied: Bool
+    let favorited: Bool
+    let newJob: Bool
+    let matchPorcentage: Int
+    let id: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case positionName
+        case description
+        case company
+        case city
+        case country
+        case postDate
+        case mustHaveSkills = "mustHaveSkills"
+        //case niceToHaveSkills = "niceToHaveSkills"
+        case jobType
+        case salaryRangeStart
+        case salaryRangeEnd
+        case applied
+        case favorited
+        case newJob
+        case matchPorcentage
+        case id
+    }
+}
+
+struct Skill: Decodable {
+    let id: Int
+    let name: String
+    let match: Bool
+    
+    enum CondingKeys: String, CodingKey {
+        case id
+        case name
+        case match
+    }
+}
+
+struct ResultOfVanhack: Decodable {
+    
+    enum CodingKeys: String, CodingKey {
+        case result
+        case targetUrl
+        case success
+        case error
+        case unAuthorizedRequest
+        case __abp
+    }
+    
+    let result: VanhackResult
+    let targetUrl: String?
+    let success: Bool
+    let error: String?
+    let unAuthorizedRequest: Bool
+    let __abp: Bool
+    
+}
+
+
+

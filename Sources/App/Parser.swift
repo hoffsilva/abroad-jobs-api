@@ -1,5 +1,6 @@
 import Vapor
 import SwiftSoup
+import Foundation
 
 final class Parser {
     let client: Client
@@ -14,6 +15,7 @@ final class Parser {
         futureJobs.append(try getJobsFromRemoteOK(on: worker))
         futureJobs.append(try getJobsFromLandingJobs(on: worker))
         futureJobs.append(try getJobsFromCryptoJobs(on: worker))
+        futureJobs.append(try getJobsFromVanhack(on: worker))
         
         return futureJobs.flatten(on: worker)
     }
@@ -45,6 +47,25 @@ final class Parser {
                 
                 let job = Job(jobTitle: jobTitle, companyLogoURL: companyLogoURL, companyName: companyName, jobDescription: jobDescription, applyURL: applyURL, tags: tags, source: "remote-ok")
                 jobs.append(job)
+            }
+            return jobs
+        }
+    }
+    
+    private func getJobsFromVanhack(on worker: Worker) throws -> Future<[Job]> {
+    
+        guard let url = URL(string: "https://api-vanhack-prod.azurewebsites.net/v1/job/search/full/?countries=&experiencelevels=&MaxResultCount=1000") else {
+            throw Abort(.internalServerError)
+        }
+        var jobs = [Job]()
+        return client.get(url).map { response in
+            guard let data = response.http.body.data else {
+                return []
+            }
+            let vhJobs = try JSONDecoder().decode(ResultOfVanhack.self, from: data)
+            print(vhJobs)
+            for vhJob in vhJobs.result.items {
+                jobs.append(Job(vhJob))
             }
             return jobs
         }
