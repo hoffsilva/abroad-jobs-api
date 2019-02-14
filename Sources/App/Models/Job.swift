@@ -18,7 +18,9 @@ struct Job: Content {
         self.tags = tags
         self.source = source
     }
-    
+}
+
+extension Job {
     init(_ landingJob: LandingJob) {
         self.jobTitle = landingJob.jobTitle
         self.companyLogoURL = landingJob.companyLogoURL
@@ -110,18 +112,10 @@ struct CryptoJob: Decodable {
 //Vanhack Jobs
 
 struct VanhackResult: Decodable {
-    
     let totalQuery: Int
     let totalCount: Int
     let items: [VanhackJob]
-    
-    enum CodingKeys: String, CodingKey {
-        case totalQuery
-        case totalCount
-        case items
-    }
 }
-
 
 struct VanhackJob: Decodable {
     let positionName: String
@@ -131,7 +125,6 @@ struct VanhackJob: Decodable {
     let country: String
     let postDate: String
     let mustHaveSkills: [Skill]
-    //let niceToHaveSkills: [Skill]
     let jobType: String
     let salaryRangeStart: String?
     let salaryRangeEnd: String?
@@ -140,57 +133,21 @@ struct VanhackJob: Decodable {
     let newJob: Bool
     let matchPorcentage: Int
     let id: Int
-    
-    enum CodingKeys: String, CodingKey {
-        case positionName
-        case description
-        case company
-        case city
-        case country
-        case postDate
-        case mustHaveSkills = "mustHaveSkills"
-        //case niceToHaveSkills = "niceToHaveSkills"
-        case jobType
-        case salaryRangeStart
-        case salaryRangeEnd
-        case applied
-        case favorited
-        case newJob
-        case matchPorcentage
-        case id
-    }
 }
 
 struct Skill: Decodable {
     let id: Int
     let name: String
     let match: Bool
-    
-    enum CondingKeys: String, CodingKey {
-        case id
-        case name
-        case match
-    }
 }
 
 struct ResultOfVanhack: Decodable {
-    
-    enum CodingKeys: String, CodingKey {
-        case result
-        case targetUrl
-        case success
-        case error
-        case unAuthorizedRequest
-        case __abp
-    }
-    
     let result: VanhackResult
     let targetUrl: String?
     let success: Bool
     let error: String?
     let unAuthorizedRequest: Bool
     let __abp: Bool
-    
 }
 
 
