@@ -98,7 +98,6 @@ struct CryptoJob: Decodable {
     let category: String?
 }
 
-
 //Vanhack Jobs
 
 struct VanhackResult: Decodable {
@@ -148,6 +147,3 @@ struct ResultOfVanhack: Decodable {
         case unAuthorizedRequest
     }
 }
-
-
-
