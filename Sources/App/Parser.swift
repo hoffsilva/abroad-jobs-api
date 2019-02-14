@@ -1,5 +1,14 @@
 import Vapor
 import SwiftSoup
+import Foundation
+
+enum URLS: String {
+    case remoteOk = "https://remoteok.io/remote-jobs"
+    case cryptoJobs = "https://cryptojobslist.com/job/filter?remote=true"
+    case vanhackJobs = "https://api-vanhack-prod.azurewebsites.net/v1/job/search/full/?countries=&experiencelevels=&MaxResultCount=1000"
+    case landingJobs = "https://landing.jobs/jobs/search.json"
+    case landingJobsSearch = "https://landing.jobs/jobs/search.json?page="
+}
 
 final class Parser {
     let client: Client
@@ -14,12 +23,13 @@ final class Parser {
         futureJobs.append(try getJobsFromRemoteOK(on: worker))
         futureJobs.append(try getJobsFromLandingJobs(on: worker))
         futureJobs.append(try getJobsFromCryptoJobs(on: worker))
+        futureJobs.append(try getJobsFromVanhack(on: worker))
         
         return futureJobs.flatten(on: worker)
     }
     
     private func getJobsFromRemoteOK(on worker: Worker) throws -> Future<[Job]> {
-        guard let url = URL(string: "https://remoteok.io/remote-jobs") else {
+        guard let url = URL(string: URLS.remoteOk.rawValue) else {
             throw Abort(.internalServerError)
         }
         return client.get(url).map { response in
@@ -50,8 +60,25 @@ final class Parser {
         }
     }
     
+    private func getJobsFromVanhack(on worker: Worker) throws -> Future<[Job]> {
+        guard let url = URL(string: URLS.vanhackJobs.rawValue) else {
+            throw Abort(.internalServerError)
+        }
+        var jobs = [Job]()
+        return client.get(url).map { response in
+            guard let data = response.http.body.data else {
+                return []
+            }
+            let vhJobs = try JSONDecoder().decode(ResultOfVanhack.self, from: data)
+            for vhJob in vhJobs.result.items {
+                jobs.append(Job(vhJob))
+            }
+            return jobs
+        }
+    }
+    
     private func getJobsFromLandingJobs(on worker: Worker) throws -> Future<[Job]> {
-        guard let url = URL(string: "https://landing.jobs/jobs/search.json") else {
+        guard let url = URL(string: URLS.landingJobs.rawValue) else {
             return worker.future([])
         }
         
@@ -66,7 +93,7 @@ final class Parser {
             jobs.append(worker.future(firstPageJobs))
             
             for page in (2...landingJobsData.numberOfPages) {
-                guard let url = URL(string: "https://landing.jobs/jobs/search.json?page=\(page)") else {
+                guard let url = URL(string: URLS.landingJobsSearch.rawValue + String(page)) else {
                     break
                 }
                 
@@ -88,7 +115,7 @@ final class Parser {
     }
     
     private func getJobsFromCryptoJobs(on worker: Worker) throws -> Future<[Job]> {
-        guard let url = URL(string: "https://cryptojobslist.com/job/filter?remote=true") else {
+        guard let url = URL(string: URLS.cryptoJobs.rawValue) else {
             return worker.future([])
         }
         
