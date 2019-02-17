@@ -5,13 +5,13 @@ import Vapor
 final class Parser {
     let client: Client
     var currentPageRemotelyAwesome = 1
+
     init(client: Client) {
         self.client = client
     }
 
     public func getJobs(_ worker: Worker) throws -> Future<[[Job]]> {
         var futureJobs: [Future<[Job]>] = []
-
         futureJobs.append(try getJobsFromRemoteOK(on: worker))
         futureJobs.append(try getJobsFromLandingJobs(on: worker))
         futureJobs.append(try getJobsFromCryptoJobs(on: worker))
@@ -20,7 +20,6 @@ final class Parser {
             futureJobs.append(try getJobsRemotelyAwesome(on: worker))
             currentPageRemotelyAwesome += 1
         }
-
         return futureJobs.flatten(on: worker)
     }
 
@@ -48,7 +47,6 @@ final class Parser {
                 let tags = try arrayData[3].select("h3").array().map { try $0.text() }
                 var jobDescription = try trDescription?.text().components(separatedBy: " See more jobs at").first ?? ""
                 jobDescription = jobDescription.replacingOccurrences(of: "{linebreak}", with: "\n")
-
                 let job = Job(jobTitle: jobTitle, companyLogoURL: companyLogoURL, companyName: companyName, jobDescription: jobDescription, applyURL: applyURL, tags: tags, source: Constants.remoteOkSource)
                 jobs.append(job)
             }
@@ -60,12 +58,10 @@ final class Parser {
         guard let url = URL(string: Constants.remotelyAwesomeJobsURL + String(currentPageRemotelyAwesome)) else {
             throw Abort(.internalServerError)
         }
-        print(url)
         return client.get(url).map { response in
             let html = response.http.body.description
             let document = try SwiftSoup.parse(html)
             let htmlJobsList = try document.select("div.jobs-container li").array()
-            let pagesOfRemotelyAwesome = try Int(document.select("span.last a").attr("href").suffix(2)) ?? 1
             var jobs = [Job]()
             for htmlJob in htmlJobsList {
                 let jobTitle = try htmlJob.select("h2 a").text()
@@ -74,7 +70,6 @@ final class Parser {
                 let tags = try htmlJob.select("meta").array()[1].attr("content").components(separatedBy: ",")
                 let jobDescription = ""
                 let job = Job(jobTitle: jobTitle, companyLogoURL: "", companyName: companyName, jobDescription: jobDescription, applyURL: applyURL, tags: tags, source: Constants.remotelyAwesomeJobsSource)
-                print(job)
                 jobs.append(job)
             }
             return jobs

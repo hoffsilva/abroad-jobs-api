@@ -156,7 +156,6 @@ struct ResultOfVanhack: Decodable {
     let error: String?
     let unAuthorizedRequest: Bool
     let abp: Bool
-
     enum CodingKeys: String, CodingKey {
         case abp = "__abp"
         case result
