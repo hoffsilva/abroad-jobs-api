@@ -1,5 +1,23 @@
 import Vapor
 
+enum Constants {
+    // Source
+    static let remoteOkSource = "remote-ok"
+    static let landingJobsSource = "landing-jobs"
+    static let cryptoJobsSource = "cryptojobslist"
+    static let vanhackJobsSource = "vanhackjobs"
+    static let remotelyAwesomeJobsSource = "remotelyawesomejobs"
+    // Urls
+    static let remoteOkURL = "https://remoteok.io/remote-jobs"
+    static let cryptoJobsURL = "https://cryptojobslist.com/job/filter?remote=true"
+    static let vanhackJobsURL = "https://api-vanhack-prod.azurewebsites.net/v1/job/search/full/?countries=&experiencelevels=&MaxResultCount=1000"
+    static let landingJobsURL = "https://landing.jobs/jobs/search.json"
+    static let landingJobsSearchURL = "https://landing.jobs/jobs/search.json?page="
+    static let remotelyAwesomeJobsURL = "https://www.remotelyawesomejobs.com/jobs/page/"
+    static let remotelyAwesomeJobDetailURL = "https://www.remotelyawesomejobs.com/"
+    
+}
+
 struct Job: Content {
     let jobTitle: String
     let companyLogoURL: String
@@ -18,9 +36,9 @@ extension Job {
         self.jobDescription = ""
         self.applyURL = landingJob.applyURL
         self.tags = landingJob.skills.map { $0.name }
-        self.source = "landing-jobs"
+        self.source = Constants.landingJobsSource
     }
-    
+
     init(_ cryptoJob: CryptoJob) {
         self.jobTitle = cryptoJob.jobTitle
         self.companyLogoURL = cryptoJob.companyLogoURL ?? "NA"
@@ -28,9 +46,9 @@ extension Job {
         self.jobDescription = cryptoJob.jobDescription
         self.applyURL = cryptoJob.applyURL
         self.tags = [cryptoJob.category ?? ""].filter { $0 != "" }
-        self.source = "cryptojobslist"
+        self.source = Constants.cryptoJobsSource
     }
-    
+
     init(_ vanhackJob: VanhackJob) {
         self.jobTitle = vanhackJob.positionName
         self.companyLogoURL = vanhackJob.company ?? "NA"
@@ -38,7 +56,7 @@ extension Job {
         self.jobDescription = vanhackJob.description
         self.applyURL = "https://app.vanhack.com/JobBoard/JobDetails?idJob=" + String(vanhackJob.id)
         self.tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
-        self.source = "vanhackjobs"
+        self.source = Constants.vanhackJobsSource
     }
 }
 
@@ -46,7 +64,7 @@ struct LandingJob: Decodable {
     struct Skill: Decodable {
         let name: String
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case jobTitle = "title"
         case companyLogoURL = "company_logo_url"
@@ -54,7 +72,7 @@ struct LandingJob: Decodable {
         case applyURL = "url"
         case skills
     }
-    
+
     let jobTitle: String
     let companyLogoURL: String
     let companyName: String
@@ -68,10 +86,11 @@ struct LandingJobsData: Decodable {
         case criteria
         case offers
     }
+
     let isLastPage: Bool
     let criteria: String
     let offers: [LandingJob]
-    
+
     var numberOfPages: Int {
         guard let totalJobs = Int32(criteria.split(separator: " ").first ?? "") else {
             return 0
@@ -90,6 +109,7 @@ struct CryptoJob: Decodable {
         case applyURL = "canonicalURL"
         case category
     }
+
     let jobTitle: String
     let companyLogoURL: String?
     let companyName: String
@@ -98,7 +118,7 @@ struct CryptoJob: Decodable {
     let category: String?
 }
 
-//Vanhack Jobs
+// Vanhack Jobs
 
 struct VanhackResult: Decodable {
     let totalQuery: Int
@@ -137,7 +157,7 @@ struct ResultOfVanhack: Decodable {
     let error: String?
     let unAuthorizedRequest: Bool
     let abp: Bool
-    
+
     enum CodingKeys: String, CodingKey {
         case abp = "__abp"
         case result
@@ -147,3 +167,5 @@ struct ResultOfVanhack: Decodable {
         case unAuthorizedRequest
     }
 }
+
+
