@@ -1,5 +1,22 @@
 import Vapor
 
+enum Constants {
+    // Source
+    static let remoteOkSource = "remote-ok"
+    static let landingJobsSource = "landing-jobs"
+    static let cryptoJobsSource = "cryptojobslist"
+    static let vanhackJobsSource = "vanhackjobs"
+    static let remotelyAwesomeJobsSource = "remotelyawesomejobs"
+    // Urls
+    static let remoteOkURL = "https://remoteok.io/remote-jobs"
+    static let cryptoJobsURL = "https://cryptojobslist.com/job/filter?remote=true"
+    static let vanhackJobsURL = "https://api-vanhack-prod.azurewebsites.net/v1/job/search/full/?countries=&experiencelevels=&MaxResultCount=1000"
+    static let landingJobsURL = "https://landing.jobs/jobs/search.json"
+    static let landingJobsSearchURL = "https://landing.jobs/jobs/search.json?page="
+    static let remotelyAwesomeJobsURL = "https://www.remotelyawesomejobs.com/jobs/page/"
+    static let remotelyAwesomeJobDetailURL = "https://www.remotelyawesomejobs.com/"
+}
+
 struct Job: Content {
     let jobTitle: String
     let companyLogoURL: String
@@ -12,23 +29,33 @@ struct Job: Content {
 
 extension Job {
     init(_ landingJob: LandingJob) {
-        self.jobTitle = landingJob.jobTitle
-        self.companyLogoURL = landingJob.companyLogoURL
-        self.companyName = landingJob.companyName
-        self.jobDescription = ""
-        self.applyURL = landingJob.applyURL
-        self.tags = landingJob.skills.map { $0.name }
-        self.source = "landing-jobs"
+        jobTitle = landingJob.jobTitle
+        companyLogoURL = landingJob.companyLogoURL
+        companyName = landingJob.companyName
+        jobDescription = ""
+        applyURL = landingJob.applyURL
+        tags = landingJob.skills.map { $0.name }
+        source = Constants.landingJobsSource
     }
-    
+
     init(_ cryptoJob: CryptoJob) {
-        self.jobTitle = cryptoJob.jobTitle
-        self.companyLogoURL = cryptoJob.companyLogoURL ?? "NA"
-        self.companyName = cryptoJob.companyName
-        self.jobDescription = cryptoJob.jobDescription
-        self.applyURL = cryptoJob.applyURL
-        self.tags = [cryptoJob.category ?? ""].filter { $0 != "" }
-        self.source = "cryptojobslist"
+        jobTitle = cryptoJob.jobTitle
+        companyLogoURL = cryptoJob.companyLogoURL ?? "NA"
+        companyName = cryptoJob.companyName
+        jobDescription = cryptoJob.jobDescription
+        applyURL = cryptoJob.applyURL
+        tags = [cryptoJob.category ?? ""].filter { $0 != "" }
+        source = Constants.cryptoJobsSource
+    }
+
+    init(_ vanhackJob: VanhackJob) {
+        jobTitle = vanhackJob.positionName
+        companyLogoURL = vanhackJob.company ?? "NA"
+        companyName = vanhackJob.company ?? "NA"
+        jobDescription = vanhackJob.description
+        applyURL = "https://app.vanhack.com/JobBoard/JobDetails?idJob=" + String(vanhackJob.id)
+        tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
+        source = Constants.vanhackJobsSource
     }
     
     init(_ vanhackJob: VanhackJob) {
@@ -46,7 +73,7 @@ struct LandingJob: Decodable {
     struct Skill: Decodable {
         let name: String
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case jobTitle = "title"
         case companyLogoURL = "company_logo_url"
@@ -54,7 +81,7 @@ struct LandingJob: Decodable {
         case applyURL = "url"
         case skills
     }
-    
+
     let jobTitle: String
     let companyLogoURL: String
     let companyName: String
@@ -68,10 +95,11 @@ struct LandingJobsData: Decodable {
         case criteria
         case offers
     }
+
     let isLastPage: Bool
     let criteria: String
     let offers: [LandingJob]
-    
+
     var numberOfPages: Int {
         guard let totalJobs = Int32(criteria.split(separator: " ").first ?? "") else {
             return 0
@@ -90,6 +118,7 @@ struct CryptoJob: Decodable {
         case applyURL = "canonicalURL"
         case category
     }
+
     let jobTitle: String
     let companyLogoURL: String?
     let companyName: String
@@ -98,7 +127,8 @@ struct CryptoJob: Decodable {
     let category: String?
 }
 
-//Vanhack Jobs
+
+// Vanhack Jobs
 
 struct VanhackResult: Decodable {
     let totalQuery: Int
@@ -137,7 +167,6 @@ struct ResultOfVanhack: Decodable {
     let error: String?
     let unAuthorizedRequest: Bool
     let abp: Bool
-    
     enum CodingKeys: String, CodingKey {
         case abp = "__abp"
         case result
