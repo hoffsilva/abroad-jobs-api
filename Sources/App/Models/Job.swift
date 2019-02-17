@@ -15,7 +15,6 @@ enum Constants {
     static let landingJobsSearchURL = "https://landing.jobs/jobs/search.json?page="
     static let remotelyAwesomeJobsURL = "https://www.remotelyawesomejobs.com/jobs/page/"
     static let remotelyAwesomeJobDetailURL = "https://www.remotelyawesomejobs.com/"
-    
 }
 
 struct Job: Content {
@@ -30,33 +29,33 @@ struct Job: Content {
 
 extension Job {
     init(_ landingJob: LandingJob) {
-        self.jobTitle = landingJob.jobTitle
-        self.companyLogoURL = landingJob.companyLogoURL
-        self.companyName = landingJob.companyName
-        self.jobDescription = ""
-        self.applyURL = landingJob.applyURL
-        self.tags = landingJob.skills.map { $0.name }
-        self.source = Constants.landingJobsSource
+        jobTitle = landingJob.jobTitle
+        companyLogoURL = landingJob.companyLogoURL
+        companyName = landingJob.companyName
+        jobDescription = ""
+        applyURL = landingJob.applyURL
+        tags = landingJob.skills.map { $0.name }
+        source = Constants.landingJobsSource
     }
 
     init(_ cryptoJob: CryptoJob) {
-        self.jobTitle = cryptoJob.jobTitle
-        self.companyLogoURL = cryptoJob.companyLogoURL ?? "NA"
-        self.companyName = cryptoJob.companyName
-        self.jobDescription = cryptoJob.jobDescription
-        self.applyURL = cryptoJob.applyURL
-        self.tags = [cryptoJob.category ?? ""].filter { $0 != "" }
-        self.source = Constants.cryptoJobsSource
+        jobTitle = cryptoJob.jobTitle
+        companyLogoURL = cryptoJob.companyLogoURL ?? "NA"
+        companyName = cryptoJob.companyName
+        jobDescription = cryptoJob.jobDescription
+        applyURL = cryptoJob.applyURL
+        tags = [cryptoJob.category ?? ""].filter { $0 != "" }
+        source = Constants.cryptoJobsSource
     }
 
     init(_ vanhackJob: VanhackJob) {
-        self.jobTitle = vanhackJob.positionName
-        self.companyLogoURL = vanhackJob.company ?? "NA"
-        self.companyName = vanhackJob.company ?? "NA"
-        self.jobDescription = vanhackJob.description
-        self.applyURL = "https://app.vanhack.com/JobBoard/JobDetails?idJob=" + String(vanhackJob.id)
-        self.tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
-        self.source = Constants.vanhackJobsSource
+        jobTitle = vanhackJob.positionName
+        companyLogoURL = vanhackJob.company ?? "NA"
+        companyName = vanhackJob.company ?? "NA"
+        jobDescription = vanhackJob.description
+        applyURL = "https://app.vanhack.com/JobBoard/JobDetails?idJob=" + String(vanhackJob.id)
+        tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
+        source = Constants.vanhackJobsSource
     }
 }
 
@@ -167,5 +166,3 @@ struct ResultOfVanhack: Decodable {
         case unAuthorizedRequest
     }
 }
-
-
