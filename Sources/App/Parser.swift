@@ -16,10 +16,10 @@ final class Parser {
         futureJobs.append(try getJobsFromLandingJobs(on: worker))
         futureJobs.append(try getJobsFromCryptoJobs(on: worker))
         futureJobs.append(try getJobsFromVanhack(on: worker))
-        for _ in 1 ... 57 {
-            futureJobs.append(try getJobsRemotelyAwesome(on: worker))
-            currentPageRemotelyAwesome += 1
-        }
+        // for _ in 1 ... 57 {
+        //     futureJobs.append(try getJobsRemotelyAwesome(on: worker))
+        //     currentPageRemotelyAwesome += 1
+        // }
         return futureJobs.flatten(on: worker)
     }
 
