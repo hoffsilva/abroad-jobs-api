@@ -57,16 +57,6 @@ extension Job {
         tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
         source = Constants.vanhackJobsSource
     }
-    
-    init(_ vanhackJob: VanhackJob) {
-        self.jobTitle = vanhackJob.positionName
-        self.companyLogoURL = vanhackJob.company ?? "NA"
-        self.companyName = vanhackJob.company ?? "NA"
-        self.jobDescription = vanhackJob.description
-        self.applyURL = "https://app.vanhack.com/JobBoard/JobDetails?idJob=" + String(vanhackJob.id)
-        self.tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
-        self.source = "vanhackjobs"
-    }
 }
 
 struct LandingJob: Decodable {
@@ -126,7 +116,6 @@ struct CryptoJob: Decodable {
     let applyURL: String
     let category: String?
 }
-
 
 // Vanhack Jobs
 

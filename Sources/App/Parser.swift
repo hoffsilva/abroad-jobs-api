@@ -1,18 +1,6 @@
 import Foundation
 import SwiftSoup
-<<<<<<< HEAD
 import Vapor
-=======
-import Foundation
-
-enum URLS: String {
-    case remoteOk = "https://remoteok.io/remote-jobs"
-    case cryptoJobs = "https://cryptojobslist.com/job/filter?remote=true"
-    case vanhackJobs = "https://api-vanhack-prod.azurewebsites.net/v1/job/search/full/?countries=&experiencelevels=&MaxResultCount=1000"
-    case landingJobs = "https://landing.jobs/jobs/search.json"
-    case landingJobsSearch = "https://landing.jobs/jobs/search.json?page="
-}
->>>>>>> 9ec628e973ba2b3c54a9be33ea636c4fe17a007c
 
 final class Parser {
     let client: Client
@@ -28,7 +16,6 @@ final class Parser {
         futureJobs.append(try getJobsFromLandingJobs(on: worker))
         futureJobs.append(try getJobsFromCryptoJobs(on: worker))
         futureJobs.append(try getJobsFromVanhack(on: worker))
-<<<<<<< HEAD
         for _ in 1 ... 57 {
             futureJobs.append(try getJobsRemotelyAwesome(on: worker))
             currentPageRemotelyAwesome += 1
@@ -38,14 +25,6 @@ final class Parser {
 
     private func getJobsFromRemoteOK(on _: Worker) throws -> Future<[Job]> {
         guard let url = URL(string: Constants.remoteOkURL) else {
-=======
-        
-        return futureJobs.flatten(on: worker)
-    }
-    
-    private func getJobsFromRemoteOK(on worker: Worker) throws -> Future<[Job]> {
-        guard let url = URL(string: URLS.remoteOk.rawValue) else {
->>>>>>> 9ec628e973ba2b3c54a9be33ea636c4fe17a007c
             throw Abort(.internalServerError)
         }
         return client.get(url).map { response in
@@ -96,15 +75,9 @@ final class Parser {
             return jobs
         }
     }
-<<<<<<< HEAD
 
     private func getJobsFromVanhack(on _: Worker) throws -> Future<[Job]> {
         guard let url = URL(string: Constants.vanhackJobsURL) else {
-=======
-    
-    private func getJobsFromVanhack(on worker: Worker) throws -> Future<[Job]> {
-        guard let url = URL(string: URLS.vanhackJobs.rawValue) else {
->>>>>>> 9ec628e973ba2b3c54a9be33ea636c4fe17a007c
             throw Abort(.internalServerError)
         }
         var jobs = [Job]()
@@ -119,15 +92,9 @@ final class Parser {
             return jobs
         }
     }
-<<<<<<< HEAD
 
     private func getJobsFromLandingJobs(on worker: Worker) throws -> Future<[Job]> {
         guard let url = URL(string: Constants.landingJobsURL) else {
-=======
-    
-    private func getJobsFromLandingJobs(on worker: Worker) throws -> Future<[Job]> {
-        guard let url = URL(string: URLS.landingJobs.rawValue) else {
->>>>>>> 9ec628e973ba2b3c54a9be33ea636c4fe17a007c
             return worker.future([])
         }
 
@@ -140,15 +107,9 @@ final class Parser {
             let landingJobsData = try JSONDecoder().decode(LandingJobsData.self, from: data)
             let firstPageJobs = landingJobsData.offers.map { Job($0) }
             jobs.append(worker.future(firstPageJobs))
-<<<<<<< HEAD
 
             for page in 2 ... landingJobsData.numberOfPages {
                 guard let url = URL(string: Constants.landingJobsSearchURL + String(page)) else {
-=======
-            
-            for page in (2...landingJobsData.numberOfPages) {
-                guard let url = URL(string: URLS.landingJobsSearch.rawValue + String(page)) else {
->>>>>>> 9ec628e973ba2b3c54a9be33ea636c4fe17a007c
                     break
                 }
 
@@ -170,11 +131,7 @@ final class Parser {
     }
 
     private func getJobsFromCryptoJobs(on worker: Worker) throws -> Future<[Job]> {
-<<<<<<< HEAD
         guard let url = URL(string: Constants.cryptoJobsURL) else {
-=======
-        guard let url = URL(string: URLS.cryptoJobs.rawValue) else {
->>>>>>> 9ec628e973ba2b3c54a9be33ea636c4fe17a007c
             return worker.future([])
         }
 
