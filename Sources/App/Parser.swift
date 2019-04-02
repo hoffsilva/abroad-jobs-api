@@ -15,7 +15,7 @@ final class Parser {
         futureJobs.append(try getJobsFromRemoteOK(on: worker))
         futureJobs.append(try getJobsFromLandingJobs(on: worker))
         futureJobs.append(try getJobsFromCryptoJobs(on: worker))
-        futureJobs.append(try getJobsFromVanhack(on: worker))
+        // futureJobs.append(try getJobsFromVanhack(on: worker))
         // for _ in 1 ... 57 {
         //     futureJobs.append(try getJobsRemotelyAwesome(on: worker))
         //     currentPageRemotelyAwesome += 1
