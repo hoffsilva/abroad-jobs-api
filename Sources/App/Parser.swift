@@ -40,8 +40,8 @@ final class Parser {
                 guard arrayData.count >= 3 else {
                     continue
                 }
-                let jobTitle = try arrayData[1].select("a h2").text()
-                let companyLogoURL = try arrayData[0].select("div").attr("data-original")
+                let jobTitle = try arrayData[1].select("h2").text()
+                let companyLogoURL = try arrayData[0].select("a img").attr("src")
                 let companyName = try arrayData[1].select("a h3").text()
                 let applyURL = try "https://remoteok.io" + arrayData[1].select("a").attr("href")
                 let tags = try arrayData[3].select("h3").array().map { try $0.text() }
