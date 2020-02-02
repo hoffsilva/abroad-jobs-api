@@ -37,6 +37,7 @@ final class Parser {
             var jobs = [Job]()
             for (trData, trDescription) in pairs {
                 let arrayData = try trData.select("td").array()
+                var tags = [""]
                 guard arrayData.count >= 3 else {
                     continue
                 }
@@ -44,7 +45,9 @@ final class Parser {
                 let companyLogoURL = try arrayData[0].select("a img").attr("src")
                 let companyName = try arrayData[1].select("a h3").text()
                 let applyURL = try "https://remoteok.io" + arrayData[1].select("a").attr("href")
-                let tags = try arrayData[3].select("h3").array().map { try $0.text() }
+                if arrayData.count > 3 {
+                    tags = try arrayData[3].select("h3").array().map { try $0.text() }
+                }
                 var jobDescription = try trDescription?.text().components(separatedBy: " See more jobs at").first ?? ""
                 jobDescription = jobDescription.replacingOccurrences(of: "{linebreak}", with: "\n")
                 let job = Job(jobTitle: jobTitle, companyLogoURL: companyLogoURL, companyName: companyName, jobDescription: jobDescription, applyURL: applyURL, tags: tags, source: Constants.remoteOkSource)
