@@ -6,15 +6,14 @@ enum Constants {
     static let landingJobsSource = "landing-jobs"
     static let cryptoJobsSource = "cryptojobslist"
     static let vanhackJobsSource = "vanhackjobs"
-    static let remotelyAwesomeJobsSource = "remotelyawesomejobs"
+    static let iosDevJobs = "iosDevJobs"
     // Urls
     static let remoteOkURL = "https://remoteok.io/remote-jobs"
-    static let cryptoJobsURL = "https://cryptojobslist.com/job/filter?remote=true"
-    static let vanhackJobsURL = "https://api-vanhack-prod.azurewebsites.net/v1/job/search/full/?countries=&experiencelevels=&MaxResultCount=1000"
+    static let cryptoJobsURL = "https://cryptojobslist.com"
+    static let vanhackJobsURL = "https://api-vanhack-prod.azurewebsites.net/v1/job/search/full/?remotejob=&internal=&countries=&experiencelevels=&MaxResultCount=1000"
     static let landingJobsURL = "https://landing.jobs/jobs/search.json"
     static let landingJobsSearchURL = "https://landing.jobs/jobs/search.json?page="
-    static let remotelyAwesomeJobsURL = "https://www.remotelyawesomejobs.com/jobs/page/"
-    static let remotelyAwesomeJobDetailURL = "https://www.remotelyawesomejobs.com/"
+    static let iosDevJobsURL = "https://iosdevjobs.com/jm-ajax/get_listings/"
 }
 
 struct Job: Content {
@@ -129,13 +128,14 @@ struct VanhackJob: Decodable {
     let positionName: String
     let description: String
     let company: String?
-    let city: String
+    let city: String?
     let country: String
     let postDate: String
     let mustHaveSkills: [Skill]
+    let niceToHaveSkills: [Skill]
     let jobType: String
-    let salaryRangeStart: String?
-    let salaryRangeEnd: String?
+    let salaryRangeStart: Int?
+    let salaryRangeEnd: Int?
     let applied: Bool
     let favorited: Bool
     let newJob: Bool
