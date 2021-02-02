@@ -95,28 +95,6 @@ final class Parser {
                 !job.jobTitle.isEmpty
             }
         }
-        // todo here
-//        return client.post(
-//            url,
-//            headers: ["Content-Type": "application/json"],
-//            body: ["per_page":1000, "show_pagination": false])
-//            .map { response in
-//            let html = response.http.body.description
-//            let document = try SwiftSoup.parse(html)
-//            let htmlJobsList = try document.select("div.jobs-container li").array()
-//            var jobs = [Job]()
-//            for htmlJob in htmlJobsList {
-//                let jobTitle = try htmlJob.select("h2 a").text()
-//                let companyName = try htmlJob.select("h2 span span").text()
-//                let applyURL = try Constants.remotelyAwesomeJobDetailURL + htmlJob.select("h2 a").attr("href")
-//                let tags = try htmlJob.select("meta").array()[1].attr("content").components(separatedBy: ",")
-//                let jobDescription = ""
-//                let job = Job(jobTitle: jobTitle, companyLogoURL: "", companyName: companyName, jobDescription: jobDescription, applyURL: applyURL, tags: tags, source: Constants.remotelyAwesomeJobsSource)
-//                jobs.append(job)
-//            }
-//            return jobs
-//        }
-        
     }
     
     private func getJobsFromVanhack(on _: Worker) throws -> Future<[Job]> {
