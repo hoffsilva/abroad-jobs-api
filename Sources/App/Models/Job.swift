@@ -6,7 +6,7 @@ enum Constants {
     static let landingJobsSource = "landing-jobs"
     static let cryptoJobsSource = "cryptojobslist"
     static let vanhackJobsSource = "vanhackjobs"
-    static let iosDevJobs = "iosDevJobs"
+    static let iosDevJobs = "iOSDevJobs"
     // Urls
     static let remoteOkURL = "https://remoteok.io/remote-jobs"
     static let cryptoJobsURL = "https://cryptojobslist.com"
@@ -56,6 +56,7 @@ extension Job {
         tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
         source = Constants.vanhackJobsSource
     }
+
 }
 
 struct LandingJob: Decodable {
@@ -132,7 +133,7 @@ struct VanhackJob: Decodable {
     let country: String
     let postDate: String
     let mustHaveSkills: [Skill]
-    let niceToHaveSkills: [Skill]
+    let niceToHaveSkills: [Skill]?
     let jobType: String
     let salaryRangeStart: Int?
     let salaryRangeEnd: Int?
@@ -164,4 +165,14 @@ struct ResultOfVanhack: Decodable {
         case error
         case unAuthorizedRequest
     }
+}
+
+// iOSDevJobs
+
+struct ResultOfiOSDevJobs: Decodable {
+    let found_jobs: Bool
+    let showing: String
+    let max_num_pages: Int
+    let showing_links: String
+    let html: String
 }

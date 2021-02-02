@@ -15,7 +15,7 @@ final class Parser {
         futureJobs.append(try getJobsFromLandingJobs(on: worker))
         futureJobs.append(try getJobsFromCryptoJobs(on: worker))
         futureJobs.append(try getJobsFromVanhack(on: worker))
-//        futureJobs.append(try getJobsRemotelyAwesome(on: worker))
+        futureJobs.append(try getJobsRemotelyAwesome(on: worker))
         return futureJobs.flatten(on: worker)
     }
     
@@ -58,11 +58,42 @@ final class Parser {
             throw Abort(.internalServerError)
         }
         
-        return client.post(url, headers: HTTPHeaders.init()) { (request) in
-            try request.content.encode(["per_page": "1000", "show_pagination": "false"])
+        return client.post(url, headers: [:]) { (request) in
+            try request.content.encode(["per_page": "1000", "show_pagination": "false"], as: .formData)
         }.map { response in
-            response.content
-            return [Job]()
+            guard let data = response.http.body.data else {
+                return [Job]()
+            }
+            let iOSDevJobsHTML = try JSONDecoder().decode(ResultOfiOSDevJobs.self, from: data)
+            let document = try SwiftSoup.parse(iOSDevJobsHTML.html)
+            let jobsList = try document.select("li").array()
+            var jobs = [Job]()
+            
+            for job in jobsList {
+                
+                let title = try job.select("h3").text()
+                let description = try job.select("div.job-description").text()
+                let companyURL = ""
+                let applyURL = try job.select("a").attr("href")
+                let tagsHTML = try job.select("div.tags").select("span").array()
+                var tags = try tagsHTML.map { element -> String in
+                    try element.text()
+                }
+                tags.append("iOS")
+                jobs.append(
+                    Job(
+                        jobTitle: title,
+                        companyLogoURL: companyURL,
+                        companyName: String(title.split(separator: "@").last ?? ""),
+                        jobDescription: description,
+                        applyURL: applyURL,
+                        tags: tags,
+                        source: Constants.iosDevJobs))
+            }
+            
+            return jobs.filter { job in
+                !job.jobTitle.isEmpty
+            }
         }
         // todo here
 //        return client.post(
@@ -181,6 +212,8 @@ final class Parser {
             return jobs
         }
     }
+    
+    
 }
 
 extension Parser: ServiceType {
@@ -188,3 +221,49 @@ extension Parser: ServiceType {
         return try Parser(client: worker.make())
     }
 }
+
+extension Parser {
+    
+    func getIOSDevsBody() -> Data {
+        let parameters = [
+          [
+            "key": "per_page",
+            "value": "1000",
+            "type": "text"
+          ],
+          [
+            "key": "show_pagination",
+            "value": "false",
+            "type": "text"
+          ]] as [[String : Any]]
+
+        let boundary = "Boundary-\(UUID().uuidString)"
+        var body = ""
+        for param in parameters {
+          if param["disabled"] == nil {
+            let paramName = param["key"]!
+            body += "--\(boundary)\r\n"
+            body += "Content-Disposition:form-data; name=\"\(paramName)\""
+            if param["contentType"] != nil {
+              body += "\r\nContent-Type: \(param["contentType"] as! String)"
+            }
+            let paramType = param["type"] as! String
+            if paramType == "text" {
+              let paramValue = param["value"] as! String
+              body += "\r\n\r\n\(paramValue)\r\n"
+            } else {
+              let paramSrc = param["src"] as! String
+              let fileData = try! NSData(contentsOfFile:paramSrc, options:[]) as Data
+              let fileContent = String(data: fileData, encoding: .utf8)!
+              body += "; filename=\"\(paramSrc)\"\r\n"
+                + "Content-Type: \"content-type header\"\r\n\r\n\(fileContent)\r\n"
+            }
+          }
+        }
+        body += "--\(boundary)--\r\n";
+        return body.data(using: .utf8)!
+    }
+    
+}
+
+
