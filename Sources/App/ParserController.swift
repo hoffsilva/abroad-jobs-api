@@ -6,16 +6,13 @@
 //
 
 import Vapor
-import Fluent
 
 struct ParserController: RouteCollection {
-    
-  func boot(routes: RoutesBuilder) throws {
-    routes.get(use: getAllJobs)
-  }
-  
-  func getAllJobs(_ req: Request) throws -> EventLoopFuture<[[Job]]> {
-    Parser(client: req.client).getJobs()
-  }
-  
+    func boot(routes: RoutesBuilder) throws {
+        routes.get("jobs", use: getAllJobs)
+    }
+
+    func getAllJobs(_ req: Request) throws -> EventLoopFuture<[[Job]]> {
+        try Parser(client: req.client).getJobs(req)
+    }
 }

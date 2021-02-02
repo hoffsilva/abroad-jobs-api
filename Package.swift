@@ -1,4 +1,5 @@
 // swift-tools-version:5.2
+
 import PackageDescription
 
 let package = Package(
@@ -9,30 +10,17 @@ let package = Package(
     dependencies: [
         // 💧 A server-side Swift web framework.
         .package(url: "https://github.com/vapor/vapor.git", from: "4.3.0"),
-        
+
         // SwiftSoup: Pure Swift HTML Parser, with best of DOM, CSS, and jquery (Supports Linux, iOS, Mac, tvOS, watchOS)
         .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "2.0.0"),
-        .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
-        .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
-        .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0")
     ],
     targets: [
         .target(name: "App", dependencies: [
-            .product(name: "Fluent", package: "fluent"),
-            .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
             .product(name: "Vapor", package: "vapor"),
-            .product(name: "Leaf", package: "leaf"),
-            .product(name: "SwiftSoup", package: "SwiftSoup")
-        ]
-        ),
+            .product(name: "SwiftSoup", package: "SwiftSoup"),
+        ]),
         .target(name: "Run", dependencies: [
-            .target(name: "App")
-        ]
-        ),
-        .testTarget(name: "AppTests", dependencies: [
-            .target(name:"App")
-        ]
-        )
+            .target(name: "App"),
+        ])
     ]
 )
-
