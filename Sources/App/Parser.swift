@@ -16,6 +16,7 @@ final class Parser {
         futureJobs.append(getJobsFromCryptoJobs())
         futureJobs.append(getJobsFromVanhack())
         futureJobs.append(getiOSDevJobs())
+        futureJobs.shuffle()
         return futureJobs.flatten(on: request.eventLoop)
     }
 
