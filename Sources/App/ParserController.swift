@@ -9,9 +9,9 @@ import Vapor
 import Fluent
 
 struct ParserController: RouteCollection {
+    
   func boot(routes: RoutesBuilder) throws {
-    let abroadJobs = routes.grouped("api", "acronyms")
-    abroadJobs.get(use: getAllJobs)
+    routes.get(use: getAllJobs)
   }
   
   func getAllJobs(_ req: Request) throws -> EventLoopFuture<[[Job]]> {

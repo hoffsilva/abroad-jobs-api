@@ -9,8 +9,8 @@ final class Parser {
         self.client = client
     }
     
-    public func getJobs(_ worker: Worker) throws -> Future<[[Job]]> {
-        var futureJobs: [Future<[Job]>] = []
+    public func getJobs(_ worker: Worker) throws -> EventLoopFuture<[[Job]]> {
+        var futureJobs: [EventLoopFuture<[Job]>] = []
         futureJobs.append(try getJobsFromRemoteOK(on: worker))
         futureJobs.append(try getJobsFromLandingJobs(on: worker))
         futureJobs.append(try getJobsFromCryptoJobs(on: worker))
@@ -19,7 +19,7 @@ final class Parser {
         return futureJobs.flatten(on: worker)
     }
     
-    private func getJobsFromRemoteOK(on _: Worker) throws -> Future<[Job]> {
+    private func getJobsFromRemoteOK(on _: Worker) throws -> EventLoopFuture<[Job]> {
         guard let url = URL(string: Constants.remoteOkURL) else {
             throw Abort(.internalServerError)
         }
@@ -53,7 +53,7 @@ final class Parser {
         }
     }
     
-    private func getJobsRemotelyAwesome(on _: Worker) throws -> Future<[Job]> {
+    private func getJobsRemotelyAwesome(on _: Worker) throws -> EventLoopFuture<[Job]> {
         guard let url = URL(string: Constants.iosDevJobsURL) else {
             throw Abort(.internalServerError)
         }
@@ -97,7 +97,7 @@ final class Parser {
         }
     }
     
-    private func getJobsFromVanhack(on _: Worker) throws -> Future<[Job]> {
+    private func getJobsFromVanhack(on _: Worker) throws -> EventLoopFuture<[Job]> {
         guard let url = URL(string: Constants.vanhackJobsURL) else {
             throw Abort(.internalServerError)
         }
@@ -114,7 +114,7 @@ final class Parser {
         }
     }
     
-    private func getJobsFromLandingJobs(on worker: Worker) throws -> Future<[Job]> {
+    private func getJobsFromLandingJobs(on worker: Worker) throws -> EventLoopFuture<[Job]> {
         guard let url = URL(string: Constants.landingJobsURL) else {
             return worker.future([])
         }
@@ -151,7 +151,7 @@ final class Parser {
         }
     }
     
-    private func getJobsFromCryptoJobs(on worker: Worker) throws -> Future<[Job]> {
+    private func getJobsFromCryptoJobs(on worker: Worker) throws -> EventLoopFuture<[Job]> {
         guard let url = URL(string: Constants.cryptoJobsURL) else {
             return worker.future([])
         }
