@@ -60,28 +60,21 @@ final class Parser {
     private func getiOSDevJobs() -> EventLoopFuture<[Job]> {
         let url = URI(string: Constants.iosDevJobsURL)
         return client
-            .post(url, headers: [:]) { request in
-                try request.content.encode(["per_page": "1000", "show_pagination": "false"], as: .formData)
-            }
-            .flatMapThrowing { response in
-                try response.content.decode(ResultOfiOSDevJobs.self)
-            }
-            .map { json in
+            .get(url)
+            .map { response in
                 do {
-                    let document = try SwiftSoup.parse(json.html)
-                    let jobsList = try document.select("li").array()
+                    let desc = response.description
+                    let document = try SwiftSoup.parse(desc)
+                    let jobsList = try document.select("div").array()[9].select("section").array()
                     var jobs = [Job]()
 
                     for job in jobsList {
-                        let title = try job.select("h3").text()
-                        let description = try job.select("div.job-description").text()
-                        let companyURL = ""
-                        let applyURL = try job.select("a").attr("href")
-                        let tagsHTML = try job.select("div.tags").select("span").array()
-                        var tags = try tagsHTML.map { element -> String in
-                            try element.text()
-                        }
-                        tags.append("iOS")
+                        let title = try job.select("span").text()
+                        let description = try job.select("p.job-listing__description").text()
+                        let urlToApply = try job.select("a").attr("href")
+                        let companyURL = Constants.iosDevJobs + urlToApply
+                        let applyURL = Constants.iosDevJobs + urlToApply
+                        let tags = ["iOS"]
                         jobs.append(
                             Job(
                                 jobTitle: title,

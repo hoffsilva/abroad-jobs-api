@@ -13,7 +13,7 @@ enum Constants {
     static let vanhackJobsURL = "https://api-vanhack-prod.azurewebsites.net/v1/job/search/full/?remotejob=&internal=&countries=&experiencelevels=&MaxResultCount=1000"
     static let landingJobsURL = "https://landing.jobs/jobs/search.json"
     static let landingJobsSearchURL = "https://landing.jobs/jobs/search.json?page="
-    static let iosDevJobsURL = "https://iosdevjobs.com/jm-ajax/get_listings/"
+    static let iosDevJobsURL = "https://iosdevjobs.com/"
 }
 
 struct Job: Content {
@@ -53,7 +53,11 @@ extension Job {
         companyName = vanhackJob.company ?? "NA"
         jobDescription = vanhackJob.description
         applyURL = "https://app.vanhack.com/JobBoard/JobDetails?idJob=" + String(vanhackJob.id)
-        tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
+        if let skills = vanhackJob.mustHaveSkills {
+            tags = [skills].map { $0.map { $0.name } }.first ?? [""]
+        } else {
+            tags = [""]
+        }
         source = Constants.vanhackJobsSource
     }
 
@@ -132,7 +136,7 @@ struct VanhackJob: Decodable {
     let city: String?
     let country: String
     let postDate: String
-    let mustHaveSkills: [Skill]
+    let mustHaveSkills: [Skill]?
     let niceToHaveSkills: [Skill]?
     let jobType: String
     let salaryRangeStart: Int?
@@ -140,7 +144,7 @@ struct VanhackJob: Decodable {
     let applied: Bool
     let favorited: Bool
     let newJob: Bool
-    let matchPorcentage: Int
+    let matchPorcentage: Int?
     let id: Int
 }
 
