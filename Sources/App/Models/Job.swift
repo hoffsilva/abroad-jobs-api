@@ -53,7 +53,11 @@ extension Job {
         companyName = vanhackJob.company ?? "NA"
         jobDescription = vanhackJob.description
         applyURL = "https://app.vanhack.com/JobBoard/JobDetails?idJob=" + String(vanhackJob.id)
-        tags = [vanhackJob.mustHaveSkills].map { $0.map { $0.name } }.first ?? [""]
+        if let skills = vanhackJob.mustHaveSkills {
+            tags = [skills].map { $0.map { $0.name } }.first ?? [""]
+        } else {
+            tags = [""]
+        }
         source = Constants.vanhackJobsSource
     }
 
@@ -122,6 +126,8 @@ struct CryptoJob: Decodable {
 struct VanhackResult: Decodable {
     let totalQuery: Int
     let totalCount: Int
+    let canApplyForJob: Bool
+    let profileVerificationStep: String
     let items: [VanhackJob]
 }
 
@@ -132,7 +138,7 @@ struct VanhackJob: Decodable {
     let city: String?
     let country: String
     let postDate: String
-    let mustHaveSkills: [Skill]
+    let mustHaveSkills: [Skill]?
     let niceToHaveSkills: [Skill]?
     let jobType: String
     let salaryRangeStart: Int?
@@ -140,7 +146,7 @@ struct VanhackJob: Decodable {
     let applied: Bool
     let favorited: Bool
     let newJob: Bool
-    let matchPorcentage: Int
+    let matchPorcentage: Int?
     let id: Int
 }
 

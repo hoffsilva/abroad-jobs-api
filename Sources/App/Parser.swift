@@ -11,11 +11,11 @@ final class Parser {
 
     public func getJobs(_ request: Request) throws -> EventLoopFuture<[[Job]]> {
         var futureJobs: [EventLoopFuture<[Job]>] = []
-        futureJobs.append(getJobsFromRemoteOK())
-        futureJobs.append(getJobsFromLandingJobs(request))
-        futureJobs.append(getJobsFromCryptoJobs())
+//        futureJobs.append(getJobsFromRemoteOK())
+//        futureJobs.append(getJobsFromLandingJobs(request))
+//        futureJobs.append(getJobsFromCryptoJobs())
         futureJobs.append(getJobsFromVanhack())
-        futureJobs.append(getiOSDevJobs())
+//        futureJobs.append(getiOSDevJobs())
         futureJobs.shuffle()
         return futureJobs.flatten(on: request.eventLoop)
     }
