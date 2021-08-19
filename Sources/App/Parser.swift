@@ -13,7 +13,7 @@ final class Parser {
         var futureJobs: [EventLoopFuture<[Job]>] = []
         futureJobs.append(getJobsFromRemoteOK())
         futureJobs.append(getJobsFromLandingJobs(request))
-        futureJobs.append(getJobsFromCryptoJobs())
+//        futureJobs.append(getJobsFromCryptoJobs())
         futureJobs.append(getJobsFromVanhack())
         futureJobs.append(getiOSDevJobs())
         futureJobs.shuffle()
@@ -72,8 +72,8 @@ final class Parser {
                         let title = try job.select("span").text()
                         let description = try job.select("p.job-listing__description").text()
                         let urlToApply = try job.select("a").attr("href")
-                        let companyURL = Constants.iosDevJobs + urlToApply
-                        let applyURL = Constants.iosDevJobs + urlToApply
+                        let companyURL = Constants.iosDevJobsURL + urlToApply
+                        let applyURL = Constants.iosDevJobsURL + urlToApply
                         let tags = ["iOS"]
                         jobs.append(
                             Job(

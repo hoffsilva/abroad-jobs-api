@@ -13,7 +13,7 @@ enum Constants {
     static let vanhackJobsURL = "https://api-vanhack-prod.azurewebsites.net/v1/job/search/full/?remotejob=&internal=&countries=&experiencelevels=&MaxResultCount=1000"
     static let landingJobsURL = "https://landing.jobs/jobs/search.json"
     static let landingJobsSearchURL = "https://landing.jobs/jobs/search.json?page="
-    static let iosDevJobsURL = "https://iosdevjobs.com/"
+    static let iosDevJobsURL = "https://iosdevjobs.com"
 }
 
 struct Job: Content {
